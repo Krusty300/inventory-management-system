@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import settings
-from app.api.v1.routers import items
+from app.api.v1.routers import items_router, orders_router
 from app.db.base import Base
 from app.db.session import engine
 
@@ -14,21 +14,18 @@ app = FastAPI(
     description="Inventory Management System API"
 )
 
-# Configure CORS for frontend access
+# Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8501", "http://localhost:3000"],  # Streamlit and React
+    allow_origins=["http://localhost:8501", "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include routers
-app.include_router(
-    items.router,
-    prefix=settings.API_V1_STR,
-    tags=["items"]
-)
+app.include_router(items_router, prefix=settings.API_V1_STR, tags=["items"])
+app.include_router(orders_router, prefix=settings.API_V1_STR, tags=["orders"])
 
 @app.get("/")
 def root():
